@@ -1,0 +1,71 @@
+name: Validate Skills
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.17.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate Skill structure
+        run: pnpm validate:skills
+
+      - name: Run repository tests
+        run: pnpm test
+
+      - name: Validate pull request commit messages
+        if: github.event_name == 'pull_request'
+        run: >-
+          pnpm exec commitlint
+          --from "${{ github.event.pull_request.base.sha }}"
+          --to "${{ github.event.pull_request.head.sha }}"
+          --verbose
+
+  gh-skill-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install GitHub CLI with gh skill support
+        run: |
+          set -euo pipefail
+          GH_VERSION=2.90.0
+          curl --fail --location --silent --show-error \
+            "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_amd64.tar.gz" \
+            --output gh.tar.gz
+          tar -xzf gh.tar.gz
+          echo "$PWD/gh_${GH_VERSION}_linux_amd64/bin" >> "$GITHUB_PATH"
+
+      - name: Validate publishable Skill package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh --version
+          gh skill --help
+          gh skill publish --dry-run
