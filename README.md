@@ -1,117 +1,103 @@
 # Coding Skills
 
-Reusable, safety-first coding skills for Git workflows, testing, code review,
-releases, and deployment.
+[English](README.en.md)
 
-`coding-skills` is a source repository of portable Agent Skills. The first
-release provides deliberately separated Git workflows: inspect changes, make a
-local commit, push a branch, and open a pull request. A request to commit never
-silently publishes code.
+一组可复用、以安全为先的 Coding Agent Skills，覆盖 Git 工作流、测试、代码审查、发布与部署。
 
-## Included Skills
+`coding-skills` 是便于安装和审查的 Agent Skill 源仓库。首个版本将 Git 工作流刻意拆分为独立能力：检查变更、本地提交、推送分支和创建 Pull Request。请求“提交”不会隐式发布代码。
 
-| Skill | Purpose | Side effect |
+## 已包含的 Skills
+
+| Skill | 用途 | 副作用 |
 | --- | --- | --- |
-| [`git-status`](skills/git-status/SKILL.md) | Inspect repository state and summarize staged and unstaged changes. | None |
-| [`git-commit`](skills/git-commit/SKILL.md) | Stage explicitly selected files and create a Conventional Commit. | Local commit |
-| [`git-push`](skills/git-push/SKILL.md) | Push only the intended current branch to its remote. | Remote branch update |
-| [`git-pull-request`](skills/git-pull-request/SKILL.md) | Create a GitHub pull request for an already-pushed branch. | GitHub pull request |
+| [`git-status`](skills/git-status/SKILL.md) | 检查仓库状态，并汇总已暂存和未暂存的变更。 | 无 |
+| [`git-commit`](skills/git-commit/SKILL.md) | 仅暂存明确指定的文件，并创建 Conventional Commit。 | 本地提交 |
+| [`git-push`](skills/git-push/SKILL.md) | 仅将明确目标的当前分支推送到远端。 | 更新远端分支 |
+| [`git-pull-request`](skills/git-pull-request/SKILL.md) | 为已经推送的分支创建 GitHub Pull Request。 | 创建 GitHub Pull Request |
 
-## Safety Contract
+## 安全约定
 
-- Commit, push, and pull-request creation are independent Skills and require
-  matching user intent.
-- The write Skills do not default to `git add .`, `git add -A`, `git commit -a`,
-  force pushes, remote ref deletion, automatic merges, or history rewriting.
-- `main`, `master`, and `release/*` are treated as protected targets unless the
-  user explicitly names and confirms the destination.
-- Files that resemble credentials or private keys must not be staged by the
-  normal commit workflow.
-- Skill text is guidance, not a permission system. Enforce sensitive operations
-  with host approvals, hooks, branch protection, and structured tools where
-  available. See [the security model](docs/security-model.md).
+- 提交、推送和创建 Pull Request 是彼此独立的 Skills，必须由用户分别明确授权。
+- 写入类 Skills 不会默认使用 `git add .`、`git add -A`、`git commit -a`、强制推送、删除远端引用、自动合并或改写历史。
+- `main`、`master` 和 `release/*` 默认视为受保护目标；除非用户明确指定并确认目标，否则不会对其执行写入操作。
+- 常规提交流程不得暂存疑似凭据或私钥的文件。
+- Skill 文本是工作指引，不是权限系统。敏感操作仍应依赖宿主审批、Git hooks、分支保护和结构化工具等强制措施。详见[安全模型](docs/security-model.md)。
 
-## Install with GitHub CLI
+## 使用 GitHub CLI 安装
 
-Use a GitHub CLI build that includes the `gh skill` command. Always preview
-third-party Skills before installation.
+请使用包含 `gh skill` 命令的 GitHub CLI 版本。安装第三方 Skill 前，始终先预览内容。
 
 ```bash
-# Preview one Skill without installing it
+# 预览一个 Skill，不安装
 gh skill preview tao-xiaoxin/coding-skills git-commit
 
-# Install one Skill for Codex in the current project
+# 为当前项目中的 Codex 安装一个 Skill
 gh skill install tao-xiaoxin/coding-skills git-commit \
   --agent codex --scope project
 
-# Install one Skill for Claude Code in the current project
+# 为当前项目中的 Claude Code 安装一个 Skill
 gh skill install tao-xiaoxin/coding-skills git-commit \
   --agent claude-code --scope project
 
-# Install every Skill for a user-wide Codex setup
+# 为用户级 Codex 环境安装全部 Skills
 gh skill install tao-xiaoxin/coding-skills --all \
   --agent codex --scope user
 
-# Inspect installed Skills and check for updates
+# 查看已安装的 Skills 并检查更新
 gh skill list
 gh skill update
 ```
 
-Read [host compatibility](docs/host-compatibility.md) for local development,
-manual installation fallbacks, and the Codex/Claude Code behavior model.
+本地开发、手动安装兜底方案，以及 Codex / Claude Code 的行为差异，请阅读[宿主兼容性说明](docs/host-compatibility.md)。
 
-## Develop
+## 开发
 
-Requirements: Node.js 22+ and pnpm 11+.
+环境要求：Node.js 22+ 与 pnpm 11+。
 
 ```bash
 pnpm install
 
-# Create a guided Conventional Commit
+# 交互式创建 Conventional Commit
 pnpm commit
 
-# Validate the latest commit message
+# 校验最新一条提交信息
 pnpm lint:commit
 
-# Validate Skill structure and repository tests
+# 校验 Skill 结构和仓库测试
 pnpm validate:skills
 pnpm test
 
-# Validate the package with GitHub CLI before publishing
+# 发布前使用 GitHub CLI 校验包
 gh skill publish --dry-run
 ```
 
-The `prepare` script configures the local `commit-msg` hook. Existing clones
-can refresh it with `pnpm prepare` after installing dependencies.
+`prepare` 脚本会配置本地 `commit-msg` hook。已有克隆仓库在安装依赖后，可以执行 `pnpm prepare` 刷新该 hook。
 
-## Repository Layout
+## 仓库结构
 
 ```text
-skills/<skill-name>/SKILL.md      Portable, installable Skill entry point
-skills/<skill-name>/references/   Detailed procedures and templates
-docs/                             Host compatibility and security notes
-scripts/                          Repository validation helpers
-.github/workflows/               CI and manual release workflows
+skills/<skill-name>/SKILL.md      可安装的 Skill 入口文件
+skills/<skill-name>/references/   详细流程、标准和模板
+docs/                             宿主兼容性与安全说明
+scripts/                          仓库校验脚本
+.github/workflows/                CI 与手动发布工作流
 ```
 
-## Release
+## 发布
 
-Validate before publishing:
+发布前校验：
 
 ```bash
 gh skill publish --dry-run
 gh skill publish --tag v0.1.0
 ```
 
-The release workflow is manually dispatched after review. It validates the
-Skill package before creating the requested release tag.
+发布工作流会在审核后手动触发，并会在创建请求的 release tag 前校验 Skill 包。
 
-## Contributing
+## 贡献
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for the commit convention, validation
-commands, and Skill authoring rules. [AGENTS.md](AGENTS.md) is the repository
-instruction file for coding agents.
+提交规范、校验命令和 Skill 编写要求请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)。[AGENTS.md](AGENTS.md) 是供 Coding Agent 使用的仓库指令文件。
 
-## License
+## 许可证
 
 [Apache License 2.0](LICENSE)
