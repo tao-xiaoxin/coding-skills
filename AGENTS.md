@@ -29,6 +29,17 @@ for shell commands, Git writes, network access, or credentials.
 6. Do not claim that frontmatter alone enforces security. Host approvals,
    sandboxing, branch rules, hooks, and structured MCP tools remain the
    enforcement layer.
+7. Any Skill that stages, commits, generates public artifacts, or creates public
+   GitHub content must require a privacy preflight appropriate to its operation:
+   inspect candidate paths and relevant diffs for secrets, local environment
+   identifiers, personal data, and unnecessary embedded asset metadata; inspect
+   binary assets and `data:` payloads where practical; and stop with a redacted
+   report when a credible exposure is found.
+8. Skills that create or update public Issues, pull requests, comments, release
+   notes, screenshots, or attachments must require privacy-safe summaries. Do
+   not publish machine-specific paths, local endpoints, temporary artifact
+   locations, credentials, personal data, or local-only evidence when a
+   redacted description is sufficient.
 
 ## Git Workflow Rules
 
@@ -37,6 +48,9 @@ for shell commands, Git writes, network access, or credentials.
   `git commit -a`.
 - Treat `.env`, private keys, credentials, tokens, and package-registry auth
   files as blocked from normal staging.
+- Treat non-text assets and embedded `data:` payloads as untrusted until their
+  relevant metadata has been inspected. A safe filename, valid checksum, or
+  successful rendering is not proof that an asset is safe to publish.
 - The commit Skill never pushes. The push Skill never creates a commit. The PR
   Skill never implicitly pushes, merges, assigns reviewers, or changes labels.
 - Reject `--force`, `--force-with-lease`, `--mirror`, remote deletions,
@@ -66,4 +80,6 @@ gh skill publish --dry-run
 - Supporting references exist for non-trivial policy or templates.
 - The relevant tests pass.
 - Documentation does not overstate what an agent host can enforce.
-- No secrets, generated install metadata, or machine-local files are included.
+- No secrets, personal data, machine-local paths, local endpoints, generated
+  install metadata, unnecessary binary or `data:`-URI metadata, or
+  machine-local files are included.
