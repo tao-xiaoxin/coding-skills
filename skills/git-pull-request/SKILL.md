@@ -26,6 +26,12 @@ add labels, merge, or change repository settings.
 - Use the repository default branch as the base only when the user did not name
   another base branch.
 - Create a draft only when the user explicitly asks for a draft.
+- Treat the PR title, body, linked evidence, and attachments as public release
+  surfaces. Do not include machine-specific paths, local endpoints, temporary
+  artifact locations, local-only screenshots, personal records, restricted
+  authentication material, or unnecessary binary metadata.
+- Do not copy raw local logs, environment details, or commands into the PR body
+  when a privacy-safe summary conveys the same review evidence.
 
 ## Workflow
 
@@ -52,6 +58,14 @@ Compare the current branch against the intended base. Summarize resulting
 behavior, not a copied list of commit subjects. Include only validations that
 actually ran. When no validation ran, write `Not run (not requested)`.
 
+Before constructing the public title and body, inspect the planned text and any
+linked evidence for private local information. Use redacted descriptions for
+local source material and verification artifacts. Do not publish absolute paths,
+local service addresses, temporary-file locations, local screenshot paths,
+personal records, or restricted authentication material. For a branch that
+introduces binary assets or embedded `data:` payloads, ensure the author has
+performed the applicable metadata check before presenting the asset as safe.
+
 Use [`references/pr-template.md`](references/pr-template.md) as the body
 shape. If an open pull request already exists for the branch, report it rather
 than creating a duplicate.
@@ -76,8 +90,12 @@ prompts to choose a repository, fork, push location, or title.
 Read the new pull request back:
 
 ```bash
-gh pr view --json number,url,title,state,baseRefName,headRefName,isDraft
+gh pr view --json number,url,title,state,baseRefName,headRefName,isDraft,body
 ```
+
+Confirm the resulting public title and body still exclude private local details.
+Do not claim that editing or rewriting a branch later removes every external
+cache, notification, fork, mirror, or hosting-provider copy.
 
 ## Recovery
 
@@ -89,6 +107,9 @@ gh pr view --json number,url,title,state,baseRefName,headRefName,isDraft
   another one.
 - If branch comparison is unavailable, ask the user for the intended base
   branch; do not assume a protected target.
+- If the planned public text contains private local material, stop before
+  creating the PR and replace it with a privacy-safe summary. Do not repeat the
+  removed value in output.
 
 ## Result Format
 
@@ -98,5 +119,6 @@ Report:
 2. Base and head branches.
 3. Concise summary of included behavior changes.
 4. Tests that ran, or `Not run (not requested)`.
-5. That no push, merge, reviewer, label, or repository setting change was made
+5. Privacy preflight outcome, using redacted categories only.
+6. That no push, merge, reviewer, label, or repository setting change was made
    unless explicitly requested.
