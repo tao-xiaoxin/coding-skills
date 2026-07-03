@@ -22,8 +22,10 @@ pull request, tag, merge, or any other remote publication.
 - Stage exact reviewed paths only. Preserve an existing staged set unless the
   user explicitly requests a change to it.
 - Do not stage credentials, private keys, tokens, `.env` files, package-registry
-  auth files, or other paths listed in
-  [`references/sensitive-files.md`](references/sensitive-files.md).
+  auth files, private local evidence, or other paths and content categories
+  listed in [`references/sensitive-files.md`](references/sensitive-files.md).
+- Treat new or modified binary assets and embedded `data:` payloads as untrusted
+  until their relevant metadata has been inspected where practical.
 - Do not change branches, remotes, Git configuration, hooks, or user identity.
 - Do not push after committing. Use `git-push` only after a separate request.
 
@@ -46,14 +48,21 @@ Stop if the worktree is not a Git repository, contains unresolved conflicts, or
 has no staged or user-selected changes. Read both staged and unstaged diffs for
 the files that may enter this commit.
 
-### 2. Define One Commit Scope
+### 2. Define One Commit Scope and Privacy Preflight
 
 Create one logical change per commit. Include only paths that implement the
 same user-requested outcome. Do not absorb unrelated pre-existing changes,
 experiments, generated output, or local configuration.
 
-Before staging, compare candidate paths with the sensitive-file reference. For
-a suspicious path, stop and report the path category without printing content.
+Before staging, compare candidate paths with the sensitive-file reference and
+inspect the relevant candidate diff for private material, including local
+machine details, local endpoints, personal records, restricted authentication
+material, and local-only evidence that does not belong in the repository. For
+new or modified images, fonts, archives, binaries, SVGs, and embedded `data:`
+payloads, inspect decoded metadata where practical.
+
+For a suspicious path, diff, or asset, stop and report the path and exposure
+category without printing the sensitive value or binary payload.
 
 If files are not already staged, add exact paths only:
 
@@ -68,6 +77,10 @@ git diff --cached --check
 git diff --cached --stat
 git diff --cached -- path/to/file-a path/to/file-b
 ```
+
+Re-run the relevant privacy preflight on the staged diff. Do not treat a safe
+filename, a successful render, or a passing build as proof that a staged asset
+or embedded payload is safe to publish.
 
 ### 3. Prepare the Commit Message
 
@@ -87,6 +100,8 @@ Follow [`references/conventional-commits.md`](references/conventional-commits.md
   most 72 characters.
 - Use a body only to explain meaningful motivation or behavior.
 - Use a footer for issue references or a real breaking change.
+- Do not include private local paths, local endpoints, personal records, or
+  restricted material in the message.
 
 ### 4. Commit and Verify
 
@@ -111,6 +126,9 @@ git status --short
 
 - If staging reveals unrelated changes, unstage only the affected path and
   re-check the staged diff. Do not clear the whole index.
+- If staging or review reveals private material, remove or sanitize the smallest
+  affected change, then repeat the staged-diff and metadata checks. Do not
+  publish the original value in agent output.
 - If commit-message validation fails, revise the message; do not bypass hooks.
 - If Git reports a missing author identity, tell the user how to configure it
   outside this Skill rather than altering global or local config automatically.
@@ -124,5 +142,6 @@ Report:
 1. Commit hash and subject.
 2. Files included in the commit.
 3. Validation commands and outcomes.
-4. Unstaged or untracked work that remains.
-5. That no remote push or pull request was created.
+4. Privacy and artifact checks performed, using redacted categories only.
+5. Unstaged or untracked work that remains.
+6. That no remote push or pull request was created.
