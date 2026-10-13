@@ -31,10 +31,10 @@ generic Skills CLI:
 ```bash
 # Install one Skill globally for Codex
 npx skills add tao-xiaoxin/coding-skills \
-  --skill omp-codex-agent --global --agent codex --yes
+  --skill git-status --global --agent codex --yes
 
 # Update one installed Skill or all global Skills
-npx skills update omp-codex-agent --global
+npx skills update git-status --global
 npx skills update --global
 ```
 
@@ -42,10 +42,8 @@ The update command operates on Skills previously installed by that CLI. It
 does not discover an arbitrary local directory unless it is first added as a
 package/source.
 
-The OMP delegation Skill requires a PTY or streaming terminal so Codex can
-display JSONL Agent events while the command is running. A host that only
-returns buffered command output cannot provide live progress; it must report
-that limitation rather than use a blind fixed wait.
+Model selection remains a host-level Codex setting. This repository does not
+install a separate provider, model profile, or child-agent bridge.
 
 ## Codex
 

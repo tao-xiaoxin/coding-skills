@@ -14,7 +14,6 @@
 | [`git-commit`](skills/git-commit/SKILL.md) | 仅暂存明确指定的文件，并创建 Conventional Commit。 | 本地提交 |
 | [`git-push`](skills/git-push/SKILL.md) | 仅将明确目标的当前分支推送到远端。 | 更新远端分支 |
 | [`git-pull-request`](skills/git-pull-request/SKILL.md) | 为已经推送的分支创建 GitHub Pull Request。 | 创建 GitHub Pull Request |
-| [`omp-codex-agent`](skills/omp-codex-agent/SKILL.md) | 将用户明确授权的任务交给本地 OMP Agent。 | 默认只读；写入取决于用户授权 |
 
 ## 安全约定
 
@@ -22,7 +21,7 @@
 - 写入类 Skills 不会默认使用 `git add .`、`git add -A`、`git commit -a`、强制推送、删除远端引用、自动合并或改写历史。
 - `main`、`master` 和 `release/*` 默认视为受保护目标；除非用户明确指定并确认目标，否则不会对其执行写入操作。
 - 常规提交流程不得暂存疑似凭据或私钥的文件。
-- Skill 文本是工作指引，不是权限系统。敏感操作仍应依赖宿主审批、Git hooks、分支保护和结构化工具等强制措施。详见[安全模型](docs/security-model.md)。
+- Skill 文本不是权限系统。敏感操作仍应依赖宿主审批、Git hooks、分支保护和结构化工具等强制措施。详见[安全模型](docs/security-model.md)。
 
 ## 使用 GitHub CLI 安装
 
@@ -58,10 +57,10 @@ gh skill update
 ```bash
 # 全局安装本仓库中的一个 Skill 到 Codex
 npx skills add tao-xiaoxin/coding-skills \
-  --skill omp-codex-agent --global --agent codex --yes
+  --skill git-status --global --agent codex --yes
 
 # 更新已安装的一个 Skill，或更新全部全局 Skills
-npx skills update omp-codex-agent --global
+npx skills update git-status --global
 npx skills update --global
 ```
 
