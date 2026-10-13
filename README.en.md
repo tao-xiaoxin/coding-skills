@@ -18,6 +18,7 @@ silently publishes code.
 | [`git-commit`](skills/git-commit/SKILL.md) | Stage explicitly selected files and create a Conventional Commit. | Local commit |
 | [`git-push`](skills/git-push/SKILL.md) | Push only the intended current branch to its remote. | Remote branch update |
 | [`git-pull-request`](skills/git-pull-request/SKILL.md) | Create a GitHub pull request for an already-pushed branch. | GitHub pull request |
+| [`omp-codex-agent`](skills/omp-codex-agent/SKILL.md) | Delegate explicitly authorized tasks to a local OMP Agent. | Read-only by default; user-authorized writes |
 
 ## Safety Contract
 
@@ -61,6 +62,25 @@ gh skill update
 
 Read [host compatibility](docs/host-compatibility.md) for local development,
 manual installation fallbacks, and the Codex/Claude Code behavior model.
+
+## Use the Generic `skills` CLI
+
+The repository follows the `skills/<name>/SKILL.md` layout used by the generic
+Skills CLI:
+
+```bash
+# Install one Skill from this repository for Codex globally
+npx skills add tao-xiaoxin/coding-skills \
+  --skill omp-codex-agent --global --agent codex --yes
+
+# Update one installed Skill, or all globally installed Skills
+npx skills update omp-codex-agent --global
+npx skills update --global
+```
+
+`npx skills update <skill> --global` updates a Skill only after it was installed
+and its source was recorded by that CLI. Other names, such as `computer-use`,
+follow the same rule.
 
 ## Develop
 

@@ -14,6 +14,7 @@
 | [`git-commit`](skills/git-commit/SKILL.md) | 仅暂存明确指定的文件，并创建 Conventional Commit。 | 本地提交 |
 | [`git-push`](skills/git-push/SKILL.md) | 仅将明确目标的当前分支推送到远端。 | 更新远端分支 |
 | [`git-pull-request`](skills/git-pull-request/SKILL.md) | 为已经推送的分支创建 GitHub Pull Request。 | 创建 GitHub Pull Request |
+| [`omp-codex-agent`](skills/omp-codex-agent/SKILL.md) | 将用户明确授权的任务交给本地 OMP Agent。 | 默认只读；写入取决于用户授权 |
 
 ## 安全约定
 
@@ -49,6 +50,22 @@ gh skill update
 ```
 
 本地开发、手动安装兜底方案，以及 Codex / Claude Code 的行为差异，请阅读[宿主兼容性说明](docs/host-compatibility.md)。
+
+## 使用通用 `skills` CLI
+
+仓库遵循 `skills/<name>/SKILL.md` 布局，可通过通用 CLI 安装和更新：
+
+```bash
+# 全局安装本仓库中的一个 Skill 到 Codex
+npx skills add tao-xiaoxin/coding-skills \
+  --skill omp-codex-agent --global --agent codex --yes
+
+# 更新已安装的一个 Skill，或更新全部全局 Skills
+npx skills update omp-codex-agent --global
+npx skills update --global
+```
+
+`npx skills update <skill> --global` 只更新已经通过该 CLI 安装并记录来源的 Skill；`update --global` 更新所有全局 Skill。`computer-use` 等其他名称也遵循同一规则。
 
 ## 开发
 

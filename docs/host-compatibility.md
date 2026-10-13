@@ -23,6 +23,25 @@ Use `gh skill list` to inspect installed Skills and `gh skill update` to fetch
 newer upstream versions. Local installation is a copy-based test workflow; keep
 editing this source repository rather than the installed copy.
 
+## Generic `skills` CLI
+
+The repository's `skills/<name>/SKILL.md` layout is also consumable by the
+generic Skills CLI:
+
+```bash
+# Install one Skill globally for Codex
+npx skills add tao-xiaoxin/coding-skills \
+  --skill omp-codex-agent --global --agent codex --yes
+
+# Update one installed Skill or all global Skills
+npx skills update omp-codex-agent --global
+npx skills update --global
+```
+
+The update command operates on Skills previously installed by that CLI. It
+does not discover an arbitrary local directory unless it is first added as a
+package/source.
+
 ## Codex
 
 Install through `gh skill install --agent codex`. The read-only `git-status`
