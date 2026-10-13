@@ -30,16 +30,16 @@ provider or make OMP a native Codex subagent.
 1. Confirm the requested task and whether OMP may modify files or use network tools. Preserve the user's constraints in the delegated prompt.
 2. Verify `omp` is available with `command -v omp` and stop with the original error if it is missing.
 3. Require a non-empty private `OMP_CODEX_AGENT_MODEL`; stop clearly if it is unset. Always use `--thinking max` unless the user asks for another supported level.
-4. For a read-only or smoke-test task, run the command from [the delegation reference](references/omp-delegation.md) with `--no-tools`, `--no-session`, and JSON output.
+4. Start the command in a PTY/streaming terminal. Read each JSONL event as it arrives and surface progress in Codex; do not issue a blocking command followed by a blind fixed wait. Follow [the streaming contract](references/omp-delegation.md).
 5. For an explicitly authorized task that needs OMP tools, keep the same model selector and thinking flags and remove only `--no-tools`; retain the user's requested working directory and side-effect boundaries.
-6. Treat a non-zero exit status, an error event, or a failed turn as failure. Do not claim success from partial assistant text. Report the provider, model alias only as `configured`, protocol, exit status, and concise non-sensitive error.
+6. Treat a non-zero exit status, an error event, or a failed turn as failure. Do not claim success from partial assistant text. Report the last observed event and concise non-sensitive error.
 
 ## Result Format
 
 Report, in order:
 
 1. That the task was delegated to the configured OMP model with the requested thinking setting.
-2. The OMP provider/protocol and process/turn status, without revealing model or credential identifiers.
-3. The useful result or a concise failure reason.
-4. Files or external state changed by OMP, if any, and how that was verified.
-5. Any remaining blocker, without exposing credentials, tokens, user content, or local-only evidence.
+2. Live progress events observed while the PTY session was running, including the final event.
+3. The OMP provider/protocol and process/turn status, without revealing model or credential identifiers.
+4. The useful result or a concise failure reason.
+5. Files or external state changed by OMP, if any, and any remaining blocker.

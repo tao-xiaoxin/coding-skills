@@ -42,6 +42,11 @@ The update command operates on Skills previously installed by that CLI. It
 does not discover an arbitrary local directory unless it is first added as a
 package/source.
 
+The OMP delegation Skill requires a PTY or streaming terminal so Codex can
+display JSONL Agent events while the command is running. A host that only
+returns buffered command output cannot provide live progress; it must report
+that limitation rather than use a blind fixed wait.
+
 ## Codex
 
 Install through `gh skill install --agent codex`. The read-only `git-status`

@@ -20,6 +20,23 @@ omp -p --no-session --no-tools --no-extensions --no-skills --no-rules --mode jso
 This calls OMP's Agent runtime through its configured provider. It does not
 modify Codex's `model_provider` or require a Codex API key.
 
+## Streaming contract
+
+Run the command in a PTY or another terminal mode that exposes incremental
+stdout. Read and handle each JSON line immediately instead of waiting for the
+process to exit. Surface at least these state transitions in Codex:
+
+- `agent_start` and `turn_start`: the delegated Agent is running.
+- `message_update`: assistant text is arriving; display deltas as they arrive.
+- Tool events, when tools are enabled: report the tool phase without exposing arguments that contain private data.
+- `turn_end` and `agent_end`: the turn reached a terminal state; combine this with the process exit code.
+
+Poll the active PTY session with the host terminal's read/poll operation until
+`agent_end` is terminal and the process exits. Do not use an unbounded sleep or
+claim progress from a command that has not emitted an event. If the host cannot
+provide PTY streaming, report that limitation instead of pretending the Agent
+is live.
+
 ## Side-effect modes
 
 | Mode | Required flags | Intended use |
